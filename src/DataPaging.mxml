@@ -1,47 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
-                       xmlns:s="library://ns.adobe.com/flex/spark"
-                       xmlns:paging="com.jamesward.paging.*">
-
-  <fx:Script>
-	import mx.collections.errors.ItemPendingError;
-    import mx.rpc.AsyncResponder;
-    import mx.rpc.AsyncToken;
-    import mx.rpc.events.FaultEvent;
-    import mx.rpc.events.ResultEvent;
-
-    private function handleCreatePendingItemFunction(index:int, ipe:ItemPendingError):Object {
-      return {};
-    }
-  </fx:Script>
-
-  <fx:Declarations>
-    <paging:PagedList id="pagedList" length="100000" pageSize="100">
-		<paging:pageNeeded>
-			var asyncToken:AsyncToken = ro.getElements(event.pagePositionStart, (event.pagePositionEnd - event.pagePositionStart + 1));
-			asyncToken.addResponder(new AsyncResponder(function result(event:ResultEvent, token:Object = null):void {
-				pagedList.setPageAt(event.result as Array, token.pagePositionStart);
-			}, function fault(event:FaultEvent, token:Object = null):void {
-				trace(event.fault.faultString);
-			}, event));
-		</paging:pageNeeded>
-	</paging:PagedList>
-    <s:AsyncListView id="asyncListView" list="{pagedList}" createPendingItemFunction="handleCreatePendingItemFunction"/>
-    <s:RemoteObject id="ro" destination="census" endpoint="http://www.jamesward.com/census2-tests/messagebroker/amf"/>
-  </fx:Declarations>
-
-  <s:DataGrid id="dg" dataProvider="{asyncListView}" width="100%" height="100%">
-    <s:columns>
-      <s:ArrayList>
-        <s:GridColumn dataField="id"/>
-        <s:GridColumn dataField="age"/>
-        <s:GridColumn dataField="classOfWorker"/>
-        <s:GridColumn dataField="education"/>
-        <s:GridColumn dataField="maritalStatus"/>
-        <s:GridColumn dataField="race"/>
-        <s:GridColumn dataField="sex"/>
-      </s:ArrayList>
-    </s:columns>
-  </s:DataGrid>
-
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:paging="com.jamesward.paging.*" xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		import mx.collections.errors.ItemPendingError;
+		import mx.rpc.AsyncResponder;
+		import mx.rpc.AsyncToken;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		
+		private function handleCreatePendingItemFunction(index:int, ipe:ItemPendingError):Object {
+			return {};
+		}
+	</fx:Script>
+	
+	<fx:Declarations>
+		<paging:PagedList id="pagedList" length="100000" pageSize="100">
+			<paging:pageNeeded>
+				var asyncToken:AsyncToken = ro.getElements(event.pagePositionStart, (event.pagePositionEnd - event.pagePositionStart + 1));
+				asyncToken.addResponder(new AsyncResponder(function result(event:ResultEvent, token:Object = null):void {
+					pagedList.setPageAt(event.result as Array, token.pagePositionStart);
+				}, function fault(event:FaultEvent, token:Object = null):void {
+					trace(event.fault.faultString);
+				}, event));
+			</paging:pageNeeded>
+		</paging:PagedList>
+		<s:AsyncListView id="asyncListView" list="{pagedList}" createPendingItemFunction="handleCreatePendingItemFunction"/>
+		<s:RemoteObject id="ro" destination="census" endpoint="http://www.jamesward.com/census2-tests/messagebroker/amf"/>
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:HorizontalLayout/>
+	</s:layout>
+	
+	<s:DataGrid dataProvider="{asyncListView}" width="100%" height="100%">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="id"/>
+				<s:GridColumn dataField="age"/>
+				<s:GridColumn dataField="classOfWorker"/>
+				<s:GridColumn dataField="education"/>
+				<s:GridColumn dataField="maritalStatus"/>
+				<s:GridColumn dataField="race"/>
+				<s:GridColumn dataField="sex"/>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	
+	<mx:DataGrid dataProvider="{asyncListView}" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn dataField="id"/>
+			<mx:DataGridColumn dataField="age"/>
+			<mx:DataGridColumn dataField="classOfWorker"/>
+			<mx:DataGridColumn dataField="education"/>
+			<mx:DataGridColumn dataField="maritalStatus"/>
+			<mx:DataGridColumn dataField="race"/>
+			<mx:DataGridColumn dataField="sex"/>
+		</mx:columns>
+	</mx:DataGrid>
+	
 </s:Application>
