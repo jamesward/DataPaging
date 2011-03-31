@@ -71,7 +71,7 @@ public class PagedList extends EventDispatcher implements IList
 		var itemIndex:uint = index + i;
 		fetchedItems[itemIndex] = true;
 		pces.push(new PropertyChangeEvent(PropertyChangeEvent.PROPERTY_CHANGE, false, false, PropertyChangeEventKind.UPDATE, itemIndex, _list.getItemAt(itemIndex), items[i], _list));
-	  	setItemAt(items[i], itemIndex);
+		_list.source[itemIndex] = items[i];
 	  }
 	  
 	  dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REPLACE, index, -1, pces));
