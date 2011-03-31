@@ -65,9 +65,16 @@ public class PagedList extends EventDispatcher implements IList
   }
   
   public function setPageAt(items:Array, index:int):void {
+	  var pces:Array = new Array();
+	  
 	  for (var i:uint = 0; i < items.length; i++) {
-	  	setItemAt(items[i], index + i);
+		var itemIndex:uint = index + i;
+		fetchedItems[itemIndex] = true;
+		pces.push(new PropertyChangeEvent(PropertyChangeEvent.PROPERTY_CHANGE, false, false, PropertyChangeEventKind.UPDATE, itemIndex, _list.getItemAt(itemIndex), items[i], _list));
+	  	setItemAt(items[i], itemIndex);
 	  }
+	  
+	  dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REPLACE, index, -1, pces));
   }
 
   public function getItemAt(index:int, prefetch:int = 0):Object {
@@ -115,7 +122,6 @@ public class PagedList extends EventDispatcher implements IList
   }
 
   public function setItemAt(item:Object, index:int):Object {
-	fetchedItems[index] = true;
     return _list.setItemAt(item, index);
   }
 
