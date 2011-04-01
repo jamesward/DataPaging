@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   xmlns:paging="com.jamesward.paging.*">
+			   xmlns:local="*">
 	
 	<fx:Script>
+		<![CDATA[
+		import mx.collections.IList;
 		import mx.collections.errors.ItemPendingError;
 		import mx.rpc.AsyncResponder;
 		import mx.rpc.AsyncToken;
@@ -14,26 +15,29 @@
 		private function handleCreatePendingItemFunction(index:int, ipe:ItemPendingError):Object {
 			return {};
 		}
+		
+		private function loadItems(list:IList, start:uint, count:uint):void
+		{
+			var asyncToken:AsyncToken = ro.getElements(start, count);
+			asyncToken.addResponder(new AsyncResponder(function result(event:ResultEvent, token:Object = null):void {
+				var v:Vector.<Object> = new Vector.<Object>();
+				for each (var i:Object in event.result)
+				{
+					v.push(i);
+				}
+				pagedList.storeItemsAt(v, token as int);
+			}, function fault(event:FaultEvent, token:Object = null):void {
+				trace(event.fault.faultString);
+			}, start));
+		}
+		]]>
 	</fx:Script>
 	
 	<fx:Declarations>
-		<paging:PagedList id="pagedList" length="100000" pageSize="100">
-			<paging:pageNeeded>
-				var asyncToken:AsyncToken = ro.getElements(event.pagePositionStart, (event.pagePositionEnd - event.pagePositionStart + 1));
-				asyncToken.addResponder(new AsyncResponder(function result(event:ResultEvent, token:Object = null):void {
-					pagedList.setPageAt(event.result as Array, token.pagePositionStart);
-				}, function fault(event:FaultEvent, token:Object = null):void {
-					trace(event.fault.faultString);
-				}, event));
-			</paging:pageNeeded>
-		</paging:PagedList>
+		<local:PagedList id="pagedList" pageSize="100" length="100000" loadItemsFunction="loadItems"/>
 		<s:AsyncListView id="asyncListView" list="{pagedList}" createPendingItemFunction="handleCreatePendingItemFunction"/>
 		<s:RemoteObject id="ro" destination="census" endpoint="http://www.jamesward.com/census2-tests/messagebroker/amf"/>
 	</fx:Declarations>
-	
-	<s:layout>
-		<s:HorizontalLayout/>
-	</s:layout>
 	
 	<s:DataGrid dataProvider="{asyncListView}" width="100%" height="100%">
 		<s:columns>
@@ -48,17 +52,5 @@
 			</s:ArrayList>
 		</s:columns>
 	</s:DataGrid>
-	
-<!--	<mx:DataGrid dataProvider="{asyncListView}" width="100%" height="100%">
-		<mx:columns>
-			<mx:DataGridColumn dataField="id"/>
-			<mx:DataGridColumn dataField="age"/>
-			<mx:DataGridColumn dataField="classOfWorker"/>
-			<mx:DataGridColumn dataField="education"/>
-			<mx:DataGridColumn dataField="maritalStatus"/>
-			<mx:DataGridColumn dataField="race"/>
-			<mx:DataGridColumn dataField="sex"/>
-		</mx:columns>
-	</mx:DataGrid>-->
 	
 </s:Application>
