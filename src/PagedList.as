@@ -476,6 +476,8 @@ public class PagedList  extends EventDispatcher implements IList
             
             if (hasPropertyListener)
                 dispatchEvent(pce);
+
+            data[index] = item;
         }
 
         return oldItem;
